@@ -90,7 +90,7 @@ RUN \
 	make install
 
 # ports and volumes
-EXPOSE 80
+EXPOSE 80 55555 6112
 
 # add local files
 COPY static/ /
