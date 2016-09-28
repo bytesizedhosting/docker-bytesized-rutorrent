@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv bash
+echo "Starting NGinx"
+exec /usr/sbin/nginx -c /config/nginx/nginx.conf
