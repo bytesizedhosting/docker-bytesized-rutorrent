@@ -2,11 +2,27 @@
 
 # make folders
 mkdir -p \
-	/config{/log/nginx,/log/rtorrent,/log/rutorrent,/nginx,/php,/rtorrent/rtorrent_sess,/rutorrent/settings/users} \
+	/config{/log/nginx,/log/rtorrent,/log/rutorrent,/irssi/,/nginx,/php,/rtorrent/rtorrent_sess,/rutorrent/settings/users} \
 	/config/rutorrent/profiles{/settings,/torrents,/users,/tmp} \
 	/data{/completed,/downloading,/sessions,/watch} \
 	/run{/nginx,/php} \
 	/var/lib/nginx/tmp/client_body
+
+mkdir -p /config/irssi/scripts/autorun && \
+  cd /config/irssi/scripts && \
+  wget --quiet -O autodl-irssi.zip https://github.com/autodl-community/autodl-irssi/releases/download/community-v1.62/autodl-irssi-community-v1.62.zip && \
+  unzip -o autodl-irssi.zip && \
+  rm autodl-irssi.zip && \
+  cp autodl-irssi.pl autorun/ && \
+  mkdir -p /config/.autodl
+echo "[options]
+gui-server-port = 12345
+gui-server-password = notsosecretpassword" > /config/.autodl/autodl.cfg
+
+echo "[options]
+rt-address = /run/php/.rtorrent.sock" > /config/.autodl/autodl2.cfg
+
+echo "/load perl" > /config/irssi/startup
 
 # copy config
 PREV_DIR=$(pwd)
@@ -40,6 +56,8 @@ cp /config/php/php.ini /etc/php7/php.ini
 [[ -e /config/rtorrent/rtorrent_sess/rtorrent.lock ]] && \
 	rm /config/rtorrent/rtorrent_sess/rtorrent.lock
 
+[[ ! -e /root/.autodl ]] && ln -s /config/.autodl /root/.autodl
+
 # permissions
 chown bytesized:bytesized \
 	/data\
@@ -55,3 +73,6 @@ chown -R bytesized:bytesized \
 chmod -R 755 /config/rutorrent/profiles
 chmod -R 755 /config/.htaccess
 chown bytesized:bytesized /config/.htaccess
+
+# Todo, can we do this differently?
+chown -R bytesized:bytesized /root/

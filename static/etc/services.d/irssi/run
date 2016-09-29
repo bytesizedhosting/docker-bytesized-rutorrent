@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+
+umask 0002
+export TERM=xterm
+
+chown -R bytesized:bytesized /config/irssi
+
+exec screen -D -m -S irssi s6-setuidgid bytesized irssi --home /config/irssi

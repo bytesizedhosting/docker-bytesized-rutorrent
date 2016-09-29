@@ -29,7 +29,19 @@ RUN \
 	php7-cgi \
 	php7-fpm \
 	php7-json  \
-	php7-pear
+	php7-pear \
+  php7-sockets
+RUN \
+apk add --no-cache  \
+	--repository http://nl.alpinelinux.org/alpine/edge/main\
+  perl \
+  irssi irssi-perl libxml2-dev perl-dev perl-archive-zip perl-net-ssleay perl-digest-sha1 perl-json perl-html-parser
+
+RUN apk add --no-cache \
+	--repository http://nl.alpinelinux.org/alpine/edge/community \
+	perl-xml-libxml
+
+RUN apk add --no-cache --repository http://nl.alpinelinux.org/alpine/edge/testing perl-json-xs
 
 RUN \
 # install build packages
@@ -81,18 +93,24 @@ RUN \
  cd /tmp/libmediainfo && \
 	./SO_Compile.sh && \
  cd /tmp/libmediainfo/ZenLib/Project/GNU/Library && \
-	make install && \
+	make -j4 install && \
  cd /tmp/libmediainfo/MediaInfoLib/Project/GNU/Library && \
-	make install && \
+	make -j4 install && \
  cd /tmp/mediainfo && \
 	./CLI_Compile.sh && \
  cd /tmp/mediainfo/MediaInfo/Project/GNU/CLI && \
-	make install
+	make -j4 install
+
+RUN  apk add --no-cache git
+
+RUN cd /usr/share/webapps/rutorrent/plugins && git clone https://github.com/autodl-community/autodl-rutorrent.git autodl-irssi
 
 # ports and volumes
 EXPOSE 80 55555 6112
 
 # add local files
+ADD files/conf.php /usr/share/webapps/rutorrent/plugins/autodl-irssi
+
 COPY static/ /
 
 VOLUME /config /data
