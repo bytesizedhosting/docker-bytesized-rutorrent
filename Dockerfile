@@ -101,9 +101,8 @@ RUN \
  cd /tmp/mediainfo/MediaInfo/Project/GNU/CLI && \
 	make -j4 install
 
-RUN  apk add --no-cache git
-
-RUN cd /usr/share/webapps/rutorrent/plugins && git clone https://github.com/autodl-community/autodl-rutorrent.git autodl-irssi
+RUN apk add --no-cache git && cd /usr/share/webapps/rutorrent/plugins && git clone https://github.com/autodl-community/autodl-rutorrent.git autodl-irssi
+RUN echo "export TERM=xterm" >> /etc/profile
 
 # ports and volumes
 EXPOSE 80 55555 6112
