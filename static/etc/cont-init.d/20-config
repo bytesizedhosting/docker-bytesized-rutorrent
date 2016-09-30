@@ -8,21 +8,26 @@ mkdir -p \
 	/run{/nginx,/php} \
 	/var/lib/nginx/tmp/client_body
 
-mkdir -p /config/irssi/scripts/autorun && \
-  cd /config/irssi/scripts && \
-  wget --quiet -O autodl-irssi.zip https://github.com/autodl-community/autodl-irssi/releases/download/community-v1.62/autodl-irssi-community-v1.62.zip && \
-  unzip -o autodl-irssi.zip && \
-  rm autodl-irssi.zip && \
-  cp autodl-irssi.pl autorun/ && \
-  mkdir -p /config/.autodl
-echo "[options]
-gui-server-port = 12345
-gui-server-password = notsosecretpassword" > /config/.autodl/autodl.cfg
+if [ ! -e "/config/irssi/scripts" ]; then
+  echo "Autodl not found, installing"
+  mkdir -p /config/irssi/scripts/autorun && \
+    cd /config/irssi/scripts && \
+    wget --quiet -O autodl-irssi.zip https://github.com/autodl-community/autodl-irssi/releases/download/community-v1.62/autodl-irssi-community-v1.62.zip && \
+    unzip -o autodl-irssi.zip && \
+    rm autodl-irssi.zip && \
+    cp autodl-irssi.pl autorun/ && \
+    mkdir -p /config/.autodl
 
-echo "[options]
-rt-address = /run/php/.rtorrent.sock" > /config/.autodl/autodl2.cfg
+  echo "[options]
+  gui-server-port = 12345
+  gui-server-password = notsosecretpassword" > /config/.autodl/autodl.cfg
 
-echo "/load perl" > /config/irssi/startup
+  echo "[options]
+  rt-address = /run/php/.rtorrent.sock" > /config/.autodl/autodl2.cfg
+
+  echo "/load perl" > /config/irssi/startup
+fi
+
 
 # copy config
 PREV_DIR=$(pwd)
@@ -57,6 +62,16 @@ cp /config/php/php.ini /etc/php7/php.ini
 	rm /config/rtorrent/rtorrent_sess/rtorrent.lock
 
 [[ ! -e /root/.autodl ]] && ln -s /config/.autodl /root/.autodl
+
+if [[ ! -d /config/rutorrent/plugins ]]; then
+  echo "Plugins config folder empty, copying stock plugins."
+  cp -r /usr/share/webapps/rutorrent/plugins /config/rutorrent/
+else
+  echo "Plugin folder found, copying into container."
+  rm -rf /usr/share/webapps/rutorrent/plugins
+  cp -r /config/rutorrent/plugins /usr/share/webapps/rutorrent/
+fi
+
 
 # permissions
 chown bytesized:bytesized \
