@@ -112,4 +112,4 @@ ADD files/conf.php /usr/share/webapps/rutorrent/plugins/autodl-irssi
 
 COPY static/ /
 
-VOLUME /config /data
+VOLUME /config /data /media
